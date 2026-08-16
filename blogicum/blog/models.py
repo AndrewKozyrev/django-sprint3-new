@@ -1,23 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.utils import timezone
 
 
 MAX_FIELD_LENGTH = 256
 CATEGORY_TITLE_PREVIEW_LENGTH = 15
 
 User = get_user_model()
-
-
-class PostManager(models.Manager):
-    """Менеджер публикаций, доступных посетителям."""
-
-    def published(self):
-        return self.filter(
-            is_published=True,
-            pub_date__lte=timezone.now(),
-            category__is_published=True,
-        )
 
 
 class PublishedModel(models.Model):
@@ -46,10 +34,8 @@ class Category(PublishedModel):
     slug = models.SlugField(
         unique=True,
         verbose_name='Идентификатор',
-        help_text=(
-            'Идентификатор страницы для URL; разрешены символы '
-            'латиницы, цифры, дефис и подчёркивание.'
-        ),
+        help_text='Идентификатор страницы для URL; разрешены символы '
+                  'латиницы, цифры, дефис и подчёркивание.',
     )
 
     class Meta(PublishedModel.Meta):
@@ -82,10 +68,8 @@ class Post(PublishedModel):
     text = models.TextField(verbose_name='Текст')
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
-        help_text=(
-            'Если установить дату и время в будущем — '
-            'можно делать отложенные публикации.'
-        ),
+        help_text='Если установить дату и время в будущем — '
+                  'можно делать отложенные публикации.',
     )
     author = models.ForeignKey(
         User,
@@ -105,8 +89,6 @@ class Post(PublishedModel):
         blank=True,
         verbose_name='Местоположение',
     )
-
-    objects = PostManager()
 
     class Meta:
         ordering = ('-pub_date',)
