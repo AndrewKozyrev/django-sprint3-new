@@ -1,63 +1,39 @@
 from django.shortcuts import get_object_or_404, render
-from django.utils import timezone
 
 from .models import Category, Post
 
 
-def index(request):
-    template = 'blog/index.html'
+POSTS_ON_MAIN_PAGE = 5
 
-    post_list = Post.objects.select_related(
+
+def get_published_posts():
+    return Post.objects.published().select_related(
         'category',
         'location',
-        'author'
-    ).filter(
-        pub_date__lte=timezone.now(),
-        is_published=True,
-        category__is_published=True
-    ).order_by('-pub_date')[:5]
+        'author',
+    )
 
-    context = {'post_list': post_list}
-    return render(request, template, context)
+
+def index(request):
+    context = {
+        'post_list': get_published_posts()[:POSTS_ON_MAIN_PAGE],
+    }
+    return render(request, 'blog/index.html', context)
 
 
 def post_detail(request, id):
-    template = 'blog/detail.html'
-    post = get_object_or_404(
-        Post.objects.select_related(
-            'category',
-            'location',
-            'author'
-        ),
-        pk=id,
-        pub_date__lte=timezone.now(),
-        is_published=True,
-        category__is_published=True
-    )
-    context = {'post': post}
-    return render(request, template, context)
+    post = get_object_or_404(get_published_posts(), pk=id)
+    return render(request, 'blog/detail.html', {'post': post})
 
 
 def category_posts(request, category_slug):
-    template = 'blog/category.html'
     category = get_object_or_404(
         Category,
         slug=category_slug,
-        is_published=True
-    )
-
-    post_list = Post.objects.select_related(
-        'category',
-        'location',
-        'author'
-    ).filter(
-        category=category,
         is_published=True,
-        pub_date__lte=timezone.now()
-    ).order_by('-pub_date')
-
+    )
     context = {
         'category': category,
-        'post_list': post_list,
+        'post_list': get_published_posts().filter(category=category),
     }
-    return render(request, template, context)
+    return render(request, 'blog/category.html', context)
