@@ -16,7 +16,7 @@ class Post(models.Model):
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
         help_text=(
-            'Если установить дату и время в будущем, '
+            'Если установить дату и время в будущем — '
             'можно делать отложенные публикации.'
         )
     )
@@ -54,7 +54,7 @@ class Post(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Публикация'
+        verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
 
 
@@ -89,7 +89,7 @@ class Category(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Категория'
+        verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
 
@@ -111,5 +111,5 @@ class Location(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Местоположение'
+        verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
